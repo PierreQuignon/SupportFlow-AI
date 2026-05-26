@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Email {
+  id           String      @id @default(uuid())
+  gmailId      String      @unique
+  fromName     String
+  fromEmail    String
+  subject      String
+  bodyHtml     String
+  receivedAt   DateTime
+  status       EmailStatus @default(PENDING)
+  priority     Priority    @default(MEDIUM)
+  category     Category    @default(OTHER)
+  aiSummary    String?
+  aiReply      String?
+  aiConfidence Float?
+  sentReply    String?
+  exportedAt   DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  messages     Message[]
+}
+
+model Message {
+  id      String   @id @default(uuid())
+  emailId String
+  email   Email    @relation(fields: [emailId], references: [id], onDelete: Cascade)
+  role    Role
+  content String
+  sentAt  DateTime
+}
+
+enum EmailStatus {
+  PENDING
+  AWAITING_VALIDATION
+  PROCESSED
+}
+
+enum Priority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum Category {
+  REFUND
+  DELIVERY_ISSUE
+  TECHNICAL
+  BILLING
+  OTHER
+}
+
+enum Role {
+  CLIENT
+  SUPPORT
+}

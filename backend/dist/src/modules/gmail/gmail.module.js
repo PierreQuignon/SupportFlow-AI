@@ -6,18 +6,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppModule = void 0;
+exports.GmailModule = void 0;
 const common_1 = require("@nestjs/common");
-const app_controller_1 = require("./app.controller");
-const app_service_1 = require("./app.service");
-let AppModule = class AppModule {
+const gmail_service_1 = require("./gmail.service");
+const emails_module_1 = require("../emails/emails.module");
+let GmailModule = class GmailModule {
 };
-exports.AppModule = AppModule;
-exports.AppModule = AppModule = __decorate([
+exports.GmailModule = GmailModule;
+exports.GmailModule = GmailModule = __decorate([
     (0, common_1.Module)({
-        imports: [],
-        controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        imports: [emails_module_1.EmailsModule],
+        providers: [gmail_service_1.GmailService],
+        exports: [gmail_service_1.GmailService],
     })
-], AppModule);
-//# sourceMappingURL=app.module.js.map
+], GmailModule);
+//# sourceMappingURL=gmail.module.js.map
