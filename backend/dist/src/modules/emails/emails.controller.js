@@ -14,13 +14,20 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EmailsController = void 0;
 const common_1 = require("@nestjs/common");
+const client_1 = require("@prisma/client");
 const emails_service_1 = require("./emails.service");
+const ai_service_1 = require("../ai/ai.service");
+const gmail_service_1 = require("../gmail/gmail.service");
 const get_emails_dto_1 = require("./dto/get-emails.dto");
 const update_email_dto_1 = require("./dto/update-email.dto");
 let EmailsController = class EmailsController {
     emailsService;
-    constructor(emailsService) {
+    aiService;
+    gmailService;
+    constructor(emailsService, aiService, gmailService) {
         this.emailsService = emailsService;
+        this.aiService = aiService;
+        this.gmailService = gmailService;
     }
     findAll(dto) {
         return this.emailsService.findAll(dto);
@@ -31,8 +38,23 @@ let EmailsController = class EmailsController {
     findOne(id) {
         return this.emailsService.findOne(id);
     }
-    update(id, dto) {
+    async update(id, dto) {
+        if (dto.status === client_1.EmailStatus.PROCESSED && dto.sentReply) {
+            const email = await this.emailsService.findOne(id);
+            await this.gmailService.sendReply(email.gmailId, dto.sentReply, email.subject);
+        }
         return this.emailsService.update(id, dto);
+    }
+    async regenerate(id) {
+        const email = await this.emailsService.findOne(id);
+        const analysis = await this.aiService.analyzeEmail(email);
+        return this.emailsService.update(id, {
+            aiReply: analysis.suggestedReply,
+            aiSummary: analysis.summary,
+            aiConfidence: analysis.confidence,
+            priority: analysis.priority,
+            category: analysis.category,
+        });
     }
 };
 exports.EmailsController = EmailsController;
@@ -62,10 +84,20 @@ __decorate([
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, update_email_dto_1.UpdateEmailDto]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], EmailsController.prototype, "update", null);
+__decorate([
+    (0, common_1.Post)(':id/regenerate'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], EmailsController.prototype, "regenerate", null);
 exports.EmailsController = EmailsController = __decorate([
     (0, common_1.Controller)('emails'),
-    __metadata("design:paramtypes", [emails_service_1.EmailsService])
+    __param(2, (0, common_1.Inject)((0, common_1.forwardRef)(() => gmail_service_1.GmailService))),
+    __metadata("design:paramtypes", [emails_service_1.EmailsService,
+        ai_service_1.AIService,
+        gmail_service_1.GmailService])
 ], EmailsController);
 //# sourceMappingURL=emails.controller.js.map

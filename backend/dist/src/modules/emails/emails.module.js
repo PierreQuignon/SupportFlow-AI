@@ -10,11 +10,14 @@ exports.EmailsModule = void 0;
 const common_1 = require("@nestjs/common");
 const emails_controller_1 = require("./emails.controller");
 const emails_service_1 = require("./emails.service");
+const ai_module_1 = require("../ai/ai.module");
+const gmail_module_1 = require("../gmail/gmail.module");
 let EmailsModule = class EmailsModule {
 };
 exports.EmailsModule = EmailsModule;
 exports.EmailsModule = EmailsModule = __decorate([
     (0, common_1.Module)({
+        imports: [ai_module_1.AIModule, (0, common_1.forwardRef)(() => gmail_module_1.GmailModule)],
         controllers: [emails_controller_1.EmailsController],
         providers: [emails_service_1.EmailsService],
         exports: [emails_service_1.EmailsService],

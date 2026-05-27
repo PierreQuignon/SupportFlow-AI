@@ -10,6 +10,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
 import { EmailsModule } from './modules/emails/emails.module';
 import { GmailModule } from './modules/gmail/gmail.module';
+import { AIModule } from './modules/ai/ai.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { GmailModule } from './modules/gmail/gmail.module';
     AuthModule,
     EmailsModule,
     GmailModule,
+    AIModule,
   ],
   controllers: [AppController],
   providers: [
