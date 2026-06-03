@@ -20,6 +20,7 @@ const ai_service_1 = require("../ai/ai.service");
 const gmail_service_1 = require("../gmail/gmail.service");
 const get_emails_dto_1 = require("./dto/get-emails.dto");
 const update_email_dto_1 = require("./dto/update-email.dto");
+const bulk_delete_emails_dto_1 = require("./dto/bulk-delete-emails.dto");
 let EmailsController = class EmailsController {
     emailsService;
     aiService;
@@ -45,16 +46,20 @@ let EmailsController = class EmailsController {
         }
         return this.emailsService.update(id, dto);
     }
+    bulkDelete(dto) {
+        return this.emailsService.bulkDelete(dto.ids);
+    }
     async regenerate(id) {
         const email = await this.emailsService.findOne(id);
         const analysis = await this.aiService.analyzeEmail(email);
-        return this.emailsService.update(id, {
+        await this.emailsService.update(id, {
             aiReply: analysis.suggestedReply,
             aiSummary: analysis.summary,
             aiConfidence: analysis.confidence,
             priority: analysis.priority,
             category: analysis.category,
         });
+        return this.emailsService.findOne(id);
     }
 };
 exports.EmailsController = EmailsController;
@@ -86,6 +91,13 @@ __decorate([
     __metadata("design:paramtypes", [String, update_email_dto_1.UpdateEmailDto]),
     __metadata("design:returntype", Promise)
 ], EmailsController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [bulk_delete_emails_dto_1.BulkDeleteEmailsDto]),
+    __metadata("design:returntype", void 0)
+], EmailsController.prototype, "bulkDelete", null);
 __decorate([
     (0, common_1.Post)(':id/regenerate'),
     __param(0, (0, common_1.Param)('id')),

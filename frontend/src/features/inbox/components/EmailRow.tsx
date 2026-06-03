@@ -1,5 +1,8 @@
+'use client';
+
 import {
   Box,
+  Checkbox,
   TableCell,
   TableRow,
   Typography,
@@ -9,7 +12,9 @@ import type { EmailListItem } from '../types';
 
 interface EmailRowProps {
   email: EmailListItem;
+  isSelected: boolean;
   onSelect: (id: string) => void;
+  onToggleSelect: (id: string) => void;
 }
 
 const formatDate = (iso: string) =>
@@ -20,9 +25,10 @@ const formatDate = (iso: string) =>
     minute: '2-digit',
   });
 
-export const EmailRow = ({ email, onSelect }: EmailRowProps) => (
+export const EmailRow = ({ email, isSelected, onSelect, onToggleSelect }: EmailRowProps) => (
   <TableRow
     hover
+    selected={isSelected}
     onClick={() => onSelect(email.id)}
     sx={{
       cursor: 'pointer',
@@ -30,6 +36,10 @@ export const EmailRow = ({ email, onSelect }: EmailRowProps) => (
       borderLeftColor: email.priority === 'HIGH' ? 'error.main' : 'transparent',
     }}
   >
+    <TableCell padding="checkbox" onClick={(e) => { e.stopPropagation(); onToggleSelect(email.id); }}>
+      <Checkbox size="small" checked={isSelected} />
+    </TableCell>
+
     <TableCell>
       <Typography variant="body2" sx={{ fontWeight: email.status === 'PENDING' ? 700 : 400 }}>
         {email.fromName}

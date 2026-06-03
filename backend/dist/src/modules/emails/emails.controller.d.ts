@@ -3,6 +3,7 @@ import { AIService } from '../ai/ai.service';
 import { GmailService } from '../gmail/gmail.service';
 import { GetEmailsDto } from './dto/get-emails.dto';
 import { UpdateEmailDto } from './dto/update-email.dto';
+import { BulkDeleteEmailsDto } from './dto/bulk-delete-emails.dto';
 export declare class EmailsController {
     private readonly emailsService;
     private readonly aiService;
@@ -14,18 +15,11 @@ export declare class EmailsController {
         messages: {
             id: string;
             sentAt: Date;
+            emailId: string;
             role: import("@prisma/client").$Enums.Role;
             content: string;
-            emailId: string;
         }[];
     } & {
-        status: import("@prisma/client").$Enums.EmailStatus;
-        priority: import("@prisma/client").$Enums.Priority;
-        category: import("@prisma/client").$Enums.Category;
-        aiSummary: string | null;
-        aiReply: string | null;
-        aiConfidence: number | null;
-        sentReply: string | null;
         id: string;
         gmailId: string;
         fromName: string;
@@ -33,18 +27,18 @@ export declare class EmailsController {
         subject: string;
         bodyHtml: string;
         receivedAt: Date;
+        status: import("@prisma/client").$Enums.EmailStatus;
+        priority: import("@prisma/client").$Enums.Priority;
+        category: import("@prisma/client").$Enums.Category;
+        aiSummary: string | null;
+        aiReply: string | null;
+        aiConfidence: number | null;
+        sentReply: string | null;
         exportedAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
     update(id: string, dto: UpdateEmailDto): Promise<{
-        status: import("@prisma/client").$Enums.EmailStatus;
-        priority: import("@prisma/client").$Enums.Priority;
-        category: import("@prisma/client").$Enums.Category;
-        aiSummary: string | null;
-        aiReply: string | null;
-        aiConfidence: number | null;
-        sentReply: string | null;
         id: string;
         gmailId: string;
         fromName: string;
@@ -52,18 +46,29 @@ export declare class EmailsController {
         subject: string;
         bodyHtml: string;
         receivedAt: Date;
+        status: import("@prisma/client").$Enums.EmailStatus;
+        priority: import("@prisma/client").$Enums.Priority;
+        category: import("@prisma/client").$Enums.Category;
+        aiSummary: string | null;
+        aiReply: string | null;
+        aiConfidence: number | null;
+        sentReply: string | null;
         exportedAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
+    bulkDelete(dto: BulkDeleteEmailsDto): Promise<{
+        deleted: number;
+    }>;
     regenerate(id: string): Promise<{
-        status: import("@prisma/client").$Enums.EmailStatus;
-        priority: import("@prisma/client").$Enums.Priority;
-        category: import("@prisma/client").$Enums.Category;
-        aiSummary: string | null;
-        aiReply: string | null;
-        aiConfidence: number | null;
-        sentReply: string | null;
+        messages: {
+            id: string;
+            sentAt: Date;
+            emailId: string;
+            role: import("@prisma/client").$Enums.Role;
+            content: string;
+        }[];
+    } & {
         id: string;
         gmailId: string;
         fromName: string;
@@ -71,6 +76,13 @@ export declare class EmailsController {
         subject: string;
         bodyHtml: string;
         receivedAt: Date;
+        status: import("@prisma/client").$Enums.EmailStatus;
+        priority: import("@prisma/client").$Enums.Priority;
+        category: import("@prisma/client").$Enums.Category;
+        aiSummary: string | null;
+        aiReply: string | null;
+        aiConfidence: number | null;
+        sentReply: string | null;
         exportedAt: Date | null;
         createdAt: Date;
         updatedAt: Date;

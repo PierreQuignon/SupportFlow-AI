@@ -1,14 +1,14 @@
 'use client';
 
 import { Drawer, List, ListItemButton, ListItemIcon, ListItemText, Toolbar } from '@mui/material';
-import InboxIcon from '@mui/icons-material/Inbox';
+import EmailIcon from '@mui/icons-material/Email';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
 const DRAWER_WIDTH = 220;
 
 const navItems = [
-  { label: 'Inbox', href: '/inbox', icon: <InboxIcon /> },
+  { label: 'Inbox', href: '/inbox', icon: < EmailIcon/> },
 ];
 
 export default function Sidebar() {

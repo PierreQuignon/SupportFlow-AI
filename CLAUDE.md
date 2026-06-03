@@ -245,6 +245,17 @@ enum Role        { CLIENT SUPPORT }
 
 **Catégories :** `REFUND` · `DELIVERY_ISSUE` · `TECHNICAL` · `BILLING` · `OTHER`
 
+**Sélection multiple & suppression en masse :**
+- Checkbox sur chaque ligne (premier colonne)
+- Checkbox "select all" dans le header (sélectionne tous les emails de la page courante, état indeterminate si sélection partielle)
+- Barre d'actions bulk affichée au-dessus du tableau quand ≥ 1 email sélectionné :
+  - Compteur `N email(s) selected`
+  - Bouton "Clear" (désélectionne tout)
+  - Bouton "Delete (N)" (rouge, déclenche dialog de confirmation)
+- Dialog de confirmation avant suppression définitive
+- La sélection est réinitialisée lors d'un changement de filtre ou de page
+- Endpoint backend : `DELETE /emails` avec body `{ ids: string[] }` → retourne `{ deleted: number }`
+
 ---
 
 ### 5.2 Synchronisation Gmail

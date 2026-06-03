@@ -8,14 +8,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var EmailsService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EmailsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
-let EmailsService = EmailsService_1 = class EmailsService {
+let EmailsService = class EmailsService {
     prisma;
-    logger = new common_1.Logger(EmailsService_1.name);
     constructor(prisma) {
         this.prisma = prisma;
     }
@@ -64,9 +62,15 @@ let EmailsService = EmailsService_1 = class EmailsService {
         const count = await this.prisma.email.count({ where: { gmailId } });
         return count > 0;
     }
+    async bulkDelete(ids) {
+        const result = await this.prisma.email.deleteMany({
+            where: { id: { in: ids } },
+        });
+        return { deleted: result.count };
+    }
 };
 exports.EmailsService = EmailsService;
-exports.EmailsService = EmailsService = EmailsService_1 = __decorate([
+exports.EmailsService = EmailsService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], EmailsService);

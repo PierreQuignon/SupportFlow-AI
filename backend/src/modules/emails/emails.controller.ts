@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Inject, Param, Patch, Post, Query, forwardRef } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Query, forwardRef } from '@nestjs/common';
 import { EmailStatus } from '@prisma/client';
 import { EmailsService } from './emails.service';
 import { AIService } from '../ai/ai.service';
 import { GmailService } from '../gmail/gmail.service';
 import { GetEmailsDto } from './dto/get-emails.dto';
 import { UpdateEmailDto } from './dto/update-email.dto';
+import { BulkDeleteEmailsDto } from './dto/bulk-delete-emails.dto';
 
 @Controller('emails')
 export class EmailsController {
@@ -39,16 +40,22 @@ export class EmailsController {
     return this.emailsService.update(id, dto);
   }
 
+  @Delete()
+  bulkDelete(@Body() dto: BulkDeleteEmailsDto) {
+    return this.emailsService.bulkDelete(dto.ids);
+  }
+
   @Post(':id/regenerate')
   async regenerate(@Param('id') id: string) {
     const email = await this.emailsService.findOne(id);
     const analysis = await this.aiService.analyzeEmail(email);
-    return this.emailsService.update(id, {
+    await this.emailsService.update(id, {
       aiReply: analysis.suggestedReply,
       aiSummary: analysis.summary,
       aiConfidence: analysis.confidence,
       priority: analysis.priority,
       category: analysis.category,
     });
+    return this.emailsService.findOne(id);
   }
 }

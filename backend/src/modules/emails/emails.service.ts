@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Email, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { GetEmailsDto } from './dto/get-emails.dto';
@@ -13,8 +13,6 @@ export interface PaginatedEmails {
 
 @Injectable()
 export class EmailsService {
-  private readonly logger = new Logger(EmailsService.name);
-
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(dto: GetEmailsDto): Promise<PaginatedEmails> {
@@ -71,5 +69,12 @@ export class EmailsService {
   async existsByGmailId(gmailId: string): Promise<boolean> {
     const count = await this.prisma.email.count({ where: { gmailId } });
     return count > 0;
+  }
+
+  async bulkDelete(ids: string[]): Promise<{ deleted: number }> {
+    const result = await this.prisma.email.deleteMany({
+      where: { id: { in: ids } },
+    });
+    return { deleted: result.count };
   }
 }

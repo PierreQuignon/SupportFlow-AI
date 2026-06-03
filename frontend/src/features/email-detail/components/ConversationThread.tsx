@@ -14,7 +14,7 @@ const formatTime = (iso: string) =>
   });
 
 export const ConversationThread = ({ messages }: ConversationThreadProps) => {
-  if (messages.length === 0) return null;
+  if (!messages || messages.length === 0) return null;
 
   return (
     <Box sx={{ mt: 3 }}>

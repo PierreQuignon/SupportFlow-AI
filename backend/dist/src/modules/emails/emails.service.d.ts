@@ -10,7 +10,6 @@ export interface PaginatedEmails {
 }
 export declare class EmailsService {
     private readonly prisma;
-    private readonly logger;
     constructor(prisma: PrismaService);
     findAll(dto: GetEmailsDto): Promise<PaginatedEmails>;
     findOne(id: string): Promise<{
@@ -44,4 +43,7 @@ export declare class EmailsService {
     update(id: string, dto: UpdateEmailDto): Promise<Email>;
     countPending(): Promise<number>;
     existsByGmailId(gmailId: string): Promise<boolean>;
+    bulkDelete(ids: string[]): Promise<{
+        deleted: number;
+    }>;
 }
