@@ -13,16 +13,13 @@ import {
   DialogContentText,
   DialogTitle,
   Stack,
-  Tooltip,
   Typography,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
-import { useQueryClient } from '@tanstack/react-query';
-import { useEmails, usePendingCount, useBulkDeleteEmails } from '@/features/inbox/hooks/useEmails';
+import { useEmails, usePendingCount, useBulkDeleteEmails, useSyncEmails } from '@/features/inbox/hooks/useEmails';
 import { EmailList } from '@/features/inbox/components/EmailList';
-import { queryKeys } from '@/shared/lib/queryKeys';
 import type { EmailFilters, EmailStatus } from '@/features/inbox/types';
 
 const STATUS_FILTERS: { label: string; value: EmailStatus | undefined }[] = [
@@ -34,7 +31,6 @@ const STATUS_FILTERS: { label: string; value: EmailStatus | undefined }[] = [
 
 export default function InboxPage() {
   const router = useRouter();
-  const queryClient = useQueryClient();
 
   const [filters, setFilters] = useState<EmailFilters>({ page: 1, limit: 20 });
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -43,12 +39,11 @@ export default function InboxPage() {
   const { data, isLoading, isFetching } = useEmails(filters);
   const { data: pendingCount } = usePendingCount();
   const { mutate: bulkDelete, isPending: isDeleting } = useBulkDeleteEmails();
+  const { mutate: sync, isPending: isSyncing } = useSyncEmails();
 
   const emails = data?.data ?? [];
 
-  const handleRefresh = () => {
-    void queryClient.invalidateQueries({ queryKey: queryKeys.emails.all });
-  };
+  const handleRefresh = () => sync();
 
   const handleStatusFilter = (status: EmailStatus | undefined) => {
     setFilters((f) => ({ ...f, status, page: 1 }));
@@ -105,11 +100,11 @@ export default function InboxPage() {
           <Chip label="Gmail connected" color="success" size="small" variant="outlined" />
             <Button
               size="small"
-              startIcon={isFetching ? <CircularProgress size={14} /> : <RefreshIcon />}
+              startIcon={isSyncing ? <CircularProgress size={14} /> : <RefreshIcon />}
               onClick={handleRefresh}
-              disabled={isFetching}
+              disabled={isSyncing}
             >
-              Refresh
+              {isSyncing ? 'Syncing...' : 'Refresh'}
             </Button>
         </Stack>
       </Stack>

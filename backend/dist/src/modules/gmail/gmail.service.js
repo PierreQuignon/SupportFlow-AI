@@ -18,15 +18,18 @@ const client_1 = require("@prisma/client");
 const googleapis_1 = require("googleapis");
 const emails_service_1 = require("../emails/emails.service");
 const ai_service_1 = require("../ai/ai.service");
+const slack_service_1 = require("../slack/slack.service");
 let GmailService = GmailService_1 = class GmailService {
     emailsService;
     aiService;
     configService;
+    slackService;
     logger = new common_1.Logger(GmailService_1.name);
-    constructor(emailsService, aiService, configService) {
+    constructor(emailsService, aiService, configService, slackService) {
         this.emailsService = emailsService;
         this.aiService = aiService;
         this.configService = configService;
+        this.slackService = slackService;
     }
     async syncEmails() {
         this.logger.log('Gmail sync started...');
@@ -74,14 +77,26 @@ let GmailService = GmailService_1 = class GmailService {
                 const email = await this.emailsService.create(emailData);
                 created++;
                 this.logger.log(`Email imported: ${msg.id}`);
-                this.aiService.analyzeEmail(email).then((analysis) => this.emailsService.update(email.id, {
-                    status: 'AWAITING_VALIDATION',
-                    aiSummary: analysis.summary,
-                    aiReply: analysis.suggestedReply,
-                    aiConfidence: analysis.confidence,
-                    priority: analysis.priority,
-                    category: analysis.category,
-                })).catch((err) => this.logger.error(`AI analysis failed for email ${email.id}`, err.stack));
+                this.aiService.analyzeEmail(email).then(async (analysis) => {
+                    await this.emailsService.update(email.id, {
+                        status: 'AWAITING_VALIDATION',
+                        aiSummary: analysis.summary,
+                        aiReply: analysis.suggestedReply,
+                        aiConfidence: analysis.confidence,
+                        priority: analysis.priority,
+                        category: analysis.category,
+                    });
+                    if (analysis.priority === 'HIGH') {
+                        await this.slackService.notifyHighPriority({
+                            id: email.id,
+                            fromName: email.fromName,
+                            fromEmail: email.fromEmail,
+                            subject: email.subject,
+                            category: analysis.category,
+                            aiSummary: analysis.summary,
+                        });
+                    }
+                }).catch((err) => this.logger.error(`AI analysis failed for email ${email.id}`, err.stack));
             }
         }
         return created;
@@ -187,6 +202,7 @@ exports.GmailService = GmailService = GmailService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [emails_service_1.EmailsService,
         ai_service_1.AIService,
-        config_1.ConfigService])
+        config_1.ConfigService,
+        slack_service_1.SlackService])
 ], GmailService);
 //# sourceMappingURL=gmail.service.js.map

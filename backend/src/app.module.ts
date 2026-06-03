@@ -11,6 +11,7 @@ import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
 import { EmailsModule } from './modules/emails/emails.module';
 import { GmailModule } from './modules/gmail/gmail.module';
 import { AIModule } from './modules/ai/ai.module';
+import { SlackModule } from './modules/slack/slack.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AIModule } from './modules/ai/ai.module';
     EmailsModule,
     GmailModule,
     AIModule,
+    SlackModule,
   ],
   controllers: [AppController],
   providers: [

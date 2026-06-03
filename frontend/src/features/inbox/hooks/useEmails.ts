@@ -19,6 +19,17 @@ export const usePendingCount = () =>
     refetchInterval: 60_000,
   });
 
+export const useSyncEmails = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: inboxService.sync,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.emails.all });
+    },
+  });
+};
+
 export const useBulkDeleteEmails = () => {
   const queryClient = useQueryClient();
 

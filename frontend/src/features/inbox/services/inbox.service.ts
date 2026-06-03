@@ -10,4 +10,7 @@ export const inboxService = {
 
   bulkDelete: (ids: string[]): Promise<{ deleted: number }> =>
     api.delete('/emails', { data: { ids } }).then((r) => r.data as { deleted: number }),
+
+  sync: (): Promise<{ synced: boolean }> =>
+    api.post('/emails/sync').then((r) => r.data as { synced: boolean }),
 };

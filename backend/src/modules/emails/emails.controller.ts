@@ -45,6 +45,12 @@ export class EmailsController {
     return this.emailsService.bulkDelete(dto.ids);
   }
 
+  @Post('sync')
+  async sync() {
+    await this.gmailService.syncEmails();
+    return { synced: true };
+  }
+
   @Post(':id/regenerate')
   async regenerate(@Param('id') id: string) {
     const email = await this.emailsService.findOne(id);

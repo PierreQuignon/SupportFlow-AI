@@ -6,20 +6,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GmailModule = void 0;
+exports.SlackModule = void 0;
 const common_1 = require("@nestjs/common");
-const gmail_service_1 = require("./gmail.service");
-const emails_module_1 = require("../emails/emails.module");
-const ai_module_1 = require("../ai/ai.module");
-const slack_module_1 = require("../slack/slack.module");
-let GmailModule = class GmailModule {
+const slack_service_1 = require("./slack.service");
+let SlackModule = class SlackModule {
 };
-exports.GmailModule = GmailModule;
-exports.GmailModule = GmailModule = __decorate([
+exports.SlackModule = SlackModule;
+exports.SlackModule = SlackModule = __decorate([
     (0, common_1.Module)({
-        imports: [(0, common_1.forwardRef)(() => emails_module_1.EmailsModule), ai_module_1.AIModule, slack_module_1.SlackModule],
-        providers: [gmail_service_1.GmailService],
-        exports: [gmail_service_1.GmailService],
+        providers: [slack_service_1.SlackService],
+        exports: [slack_service_1.SlackService],
     })
-], GmailModule);
-//# sourceMappingURL=gmail.module.js.map
+], SlackModule);
+//# sourceMappingURL=slack.module.js.map

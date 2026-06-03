@@ -6,6 +6,7 @@ import { google } from 'googleapis';
 import type { gmail_v1 } from 'googleapis';
 import { EmailsService } from '../emails/emails.service';
 import { AIService } from '../ai/ai.service';
+import { SlackService } from '../slack/slack.service';
 
 @Injectable()
 export class GmailService {
@@ -15,6 +16,7 @@ export class GmailService {
     private readonly emailsService: EmailsService,
     private readonly aiService: AIService,
     private readonly configService: ConfigService,
+    private readonly slackService: SlackService,
   ) {}
 
   @Cron('*/5 * * * *')
@@ -74,16 +76,27 @@ export class GmailService {
         this.logger.log(`Email imported: ${msg.id}`);
 
         // Trigger AI analysis asynchronously — don't block the sync loop
-        this.aiService.analyzeEmail(email).then((analysis) =>
-          this.emailsService.update(email.id, {
+        this.aiService.analyzeEmail(email).then(async (analysis) => {
+          await this.emailsService.update(email.id, {
             status: 'AWAITING_VALIDATION',
             aiSummary: analysis.summary,
             aiReply: analysis.suggestedReply,
             aiConfidence: analysis.confidence,
             priority: analysis.priority,
             category: analysis.category,
-          })
-        ).catch((err: Error) =>
+          });
+
+          if (analysis.priority === 'HIGH') {
+            await this.slackService.notifyHighPriority({
+              id: email.id,
+              fromName: email.fromName,
+              fromEmail: email.fromEmail,
+              subject: email.subject,
+              category: analysis.category,
+              aiSummary: analysis.summary,
+            });
+          }
+        }).catch((err: Error) =>
           this.logger.error(`AI analysis failed for email ${email.id}`, err.stack)
         );
       }

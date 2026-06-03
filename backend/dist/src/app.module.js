@@ -20,6 +20,7 @@ const jwt_auth_guard_1 = require("./modules/auth/jwt-auth.guard");
 const emails_module_1 = require("./modules/emails/emails.module");
 const gmail_module_1 = require("./modules/gmail/gmail.module");
 const ai_module_1 = require("./modules/ai/ai.module");
+const slack_module_1 = require("./modules/slack/slack.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -37,6 +38,7 @@ exports.AppModule = AppModule = __decorate([
             emails_module_1.EmailsModule,
             gmail_module_1.GmailModule,
             ai_module_1.AIModule,
+            slack_module_1.SlackModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [

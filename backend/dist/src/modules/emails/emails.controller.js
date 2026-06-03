@@ -49,6 +49,10 @@ let EmailsController = class EmailsController {
     bulkDelete(dto) {
         return this.emailsService.bulkDelete(dto.ids);
     }
+    async sync() {
+        await this.gmailService.syncEmails();
+        return { synced: true };
+    }
     async regenerate(id) {
         const email = await this.emailsService.findOne(id);
         const analysis = await this.aiService.analyzeEmail(email);
@@ -98,6 +102,12 @@ __decorate([
     __metadata("design:paramtypes", [bulk_delete_emails_dto_1.BulkDeleteEmailsDto]),
     __metadata("design:returntype", void 0)
 ], EmailsController.prototype, "bulkDelete", null);
+__decorate([
+    (0, common_1.Post)('sync'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], EmailsController.prototype, "sync", null);
 __decorate([
     (0, common_1.Post)(':id/regenerate'),
     __param(0, (0, common_1.Param)('id')),
